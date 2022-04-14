@@ -1,3 +1,5 @@
+require 'busted.runner'()
+
 local ngsi = require "fiware.ngsi.ngsi_helper"
 local deepcompare = require('spec.mock.helpers').deepcompare
 local arrayEqual = require('spec.mock.helpers').arrayEqual

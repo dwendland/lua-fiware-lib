@@ -71,7 +71,7 @@ local function build_required_policies(dict)
 end
 
 -- Get delegation evidence from external authorisation registry
-local function get_delegation_evidence_ext(config, issuer, target, policies, token_url, ar_eori, delegation_url, prev_steps)
+function _M.get_delegation_evidence_ext(config, issuer, target, policies, token_url, ar_eori, delegation_url, prev_steps)
    local del_evi = {}
 
    -- Check config for AR
@@ -314,7 +314,7 @@ function _M.handle_ngsi_request(config, dict)
       local target = decoded_payload["sub"]
       local api_key = decoded_payload["api_key"]
       local user_del_evi = {}
-      user_del_evi, err = get_delegation_evidence_ext(issuer, target, req_policies, token_url, ar_eori, delegation_url, api_key)
+      user_del_evi, err = _M.get_delegation_evidence_ext(config, issuer, target, req_policies, token_url, ar_eori, delegation_url, api_key)
       if err then
 	       return "Error when retrieving delegation evidence from user AR: "..err
       end
@@ -361,7 +361,7 @@ function _M.handle_ngsi_request(config, dict)
    if local_eori ~= user_policy_issuer then
       -- User policy was not issued by local authority or there was no user policy
       -- Check at local AR for policy issued by local EORI
-      local local_user_del_evi, err = get_delegation_evidence_ext(local_eori, user_policy_issuer, req_policies, local_token_url, local_ar_eori, local_delegation_url, nil)
+      local local_user_del_evi, err = _M.get_delegation_evidence_ext(config, local_eori, user_policy_issuer, req_policies, local_token_url, local_ar_eori, local_delegation_url, nil)
       if err then
 	       return "Error when retrieving policies from local AR: "..err
       end
@@ -383,3 +383,5 @@ function _M.handle_ngsi_request(config, dict)
    return
    
 end
+
+return _M

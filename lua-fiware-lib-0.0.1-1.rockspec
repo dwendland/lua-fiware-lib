@@ -1,4 +1,4 @@
-rockspec_format = '3.0'
+--rockspec_format = '2.0'
 package = 'lua-fiware-lib'
 version = '0.0.1-1'
 
@@ -24,7 +24,9 @@ dependencies = {
   'lua-resty-openssl >= 0.8.1',
   "lua-resty-http == 0.16.1",
   "lua-resty-jwt == 0.2.3",
-  "lua-cjson == 2.1.0"
+  --"lua-resty-jwt == 0.2.0",
+  --"lua-cjson == 2.1.0.6-1"
+  --"lua-cjson == 1.0.0"
 }
 
 build = {

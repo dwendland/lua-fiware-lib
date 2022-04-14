@@ -258,7 +258,7 @@ function _M.get_delegation_evidence(issuer, target, policies, delegation_url, ac
    return decoded_token["payload"]["delegationEvidence"], nil
 end
 
-local function get_trusted_list(config)
+function _M.get_trusted_list(config)
 
    -- Get config parameters
    local local_eori = config["jws"]["identifier"]
@@ -267,7 +267,7 @@ local function get_trusted_list(config)
    local satellite_trusted_list_url = config["satellite"]["trusted_list_endpoint"]
 
    -- Get token at Satellite
-   local token, err = _M.get_token(satellite_token_url, local_eori, local_eori, satellite_eori)
+   local token, err = _M.get_token(config, satellite_token_url, local_eori, local_eori, satellite_eori)
    if err then
       return nil, err
    end
@@ -313,7 +313,7 @@ end
 
 local function check_ca_fingerprint(config, ca_fingerprint)
    -- Get trusted list from satellite
-   local trusted_list, err = get_trusted_list(config)
+   local trusted_list, err = _M.get_trusted_list(config)
    if err then
       return err
    end
@@ -335,6 +335,11 @@ end
 -- Validate, verify and decode iSHARE JWT
 function _M.validate_ishare_jwt(config, token)
 
+   -- Empty token?
+   if (not token) or (string.len(token) < 1) then
+      return nil, "Empty token provided"
+   end
+   
    -- Decode JWT without validation to extract header params first
    local decoded_token = jwt:load_jwt(token)
    local header = decoded_token["header"]
