@@ -131,7 +131,7 @@ local function compare_policies(user_policies, req_policies, user_policy_target,
 	       local user_attrs = user_policy.target.resource.attributes
 	       local req_attrs = req_policy.target.resource.attributes
 	       for index, value in ipairs(req_attrs) do
-	          if (not has_value(user_attrs, "*")) and (not has_value(user_attrs, value)) then
+		  if (not has_value(user_attrs, "*")) and (not has_value(user_attrs, value)) then
 	             -- Missing required attribute
 	             attrs_ok = false
 	          end

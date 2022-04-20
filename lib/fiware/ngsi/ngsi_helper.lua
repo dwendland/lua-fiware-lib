@@ -549,14 +549,14 @@ local function get_ngsi_ld_single_entity_attributes(method, request_uri, request
    if method == "PATCH" then
       local attr = string.match(request_uri, ".*/attrs/(.*)")
       if attr and string.len(attr) > 0 then
-	       -- PATCH entity: Get attribute from URL
-	       table.insert(attrs, attr)
+	 -- PATCH entity: Get attribute from URL
+	 table.insert(attrs, attr)
       elseif request_headers and request_headers["Content-Type"] and request_headers["Content-Type"] == "application/json" then
-	       -- PATCH entity: Get attributes from body, if specified and not in URI
-	       local body_json = cjson.decode(body_data)
-	       for index, value in pairs(body_json) do
-	          table.insert(attrs, index)
-	       end
+	 -- PATCH entity: Get attributes from body, if specified and not in URI
+	 local body_json = cjson.decode(body_data)
+	 for index, value in pairs(body_json) do
+	    table.insert(attrs, index)
+	 end
       end
 
    elseif method == "DELETE" then
@@ -623,7 +623,7 @@ local function get_ngsi_ld_parameters(dict)
    local body_data = dict["body_data"]
    local post_args = dict["post_args"]
    local uri_args = dict["uri_args"]
-
+   
    -- Get HTTP method
    local method, err = _M.get_request_action(method, request_uri)
    if err then

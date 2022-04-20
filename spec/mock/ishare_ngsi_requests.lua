@@ -146,4 +146,92 @@ _M.get_all_ids_pta_pda.dict = {
 }
 _M.get_all_ids_pta_pda.dict.uri_args.type = "DELIVERYORDER"
 
+-- Patch single attr pta
+_M["patch_pta"] = {}
+_M.patch_pta.config = default_config
+_M.patch_pta.dict = {
+   token = "",
+   method = "PATCH",
+   request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:DELIVERYORDER:HAPPYPETS001/attrs/pta",
+   request_headers = nil,
+   body_data = [[
+{
+  "value": "16:00:00",
+  "type": "Property"
+}
+]],
+   post_args = nil,
+   uri_args = nil
+}
+
+-- Patch single attr eta
+_M["patch_pta"] = {}
+_M.patch_pta.config = default_config
+_M.patch_pta.dict = {
+   token = "",
+   method = "PATCH",
+   request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:DELIVERYORDER:HAPPYPETS001/attrs/eta",
+   request_headers = {},
+   body_data = [[
+{
+  "value": "18:00:00",
+  "type": "Property"
+}
+]],
+   post_args = nil,
+   uri_args = nil
+}
+_M.patch_pta.dict.request_headers["Content-Type"] = "application/json"
+
+-- Patch attrs pta&pda
+_M["patch_pta_pda"] = {}
+_M.patch_pta_pda.config = default_config
+_M.patch_pta_pda.dict = {
+   token = "",
+   method = "PATCH",
+   request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:DELIVERYORDER:HAPPYPETS001/attrs/",
+   request_headers = {},
+   body_data = [[
+{
+  "pta": {
+    "value": "16:00:00",
+    "type": "Property"
+  },
+  "pda": {
+    "value": "2022-10-05",
+    "type": "Property"
+  }
+}
+]],
+   post_args = nil,
+   uri_args = nil
+}
+_M.patch_pta_pda.dict.request_headers["Content-Type"] = "application/json"
+
+-- Patch attrs pta&eta
+_M["patch_pta_eta"] = {}
+_M.patch_pta_eta.config = default_config
+_M.patch_pta_eta.dict = {
+   token = "",
+   method = "PATCH",
+   request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:DELIVERYORDER:HAPPYPETS001/attrs/",
+   request_headers = {},
+   body_data = [[
+{
+  "pta": {
+    "value": "16:00:00",
+    "type": "Property"
+  },
+  "eta": {
+    "value": "2022-11-08",
+    "type": "Property"
+  }
+}
+]],
+   post_args = nil,
+   uri_args = nil
+}
+_M.patch_pta_eta.dict.request_headers["Content-Type"] = "application/json"
+
+
 return _M

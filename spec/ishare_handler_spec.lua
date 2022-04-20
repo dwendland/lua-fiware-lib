@@ -23,6 +23,9 @@ local err_jwt_sub_unequal_user = "Unauthorized user policy: Target subject IDs d
 -- Tests
 describe("NGSI requests: handle_ngsi_request().", function()
 
+   -- ===========================
+   --  GET requests
+   -- ===========================
    describe("GET requests.", function()
 
       it("GET single entity (M2M), allowed: all IDs, all attrs", function()
@@ -512,6 +515,102 @@ describe("NGSI requests: handle_ngsi_request().", function()
       
    end)
 
-   
+
+   -- ===========================
+   --  PATCH requests
+   -- ===========================
+   describe("PATCH requests.", function()
+
+      it("PATCH single attr (M2M), allowed: all IDs, all attrs", function()
+	 -- Config
+	 local req = requests.patch_pta
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.server.private_key,
+						     certs.server.x5c,        --x5c
+						     certs.server.identifier, --iss
+						     certs.client.identifier, --sub
+						     certs.server.identifier, --aud
+						     nil) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.falsy(err)
+      end)
+
+      it("PATCH certain attrs (M2M), allowed: all IDs, all attrs", function()
+	 -- Config
+	 local req = requests.patch_pta_pda
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.server.private_key,
+						     certs.server.x5c,        --x5c
+						     certs.server.identifier, --iss
+						     certs.client.identifier, --sub
+						     certs.server.identifier, --aud
+						     nil) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.falsy(err)
+      end)
+
+      it("PATCH single attr (M2M), allowed: all IDs, certain attrs; but wrong attr requested", function()
+	 -- Config
+	 local req = requests.patch_pta
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.server.private_key,
+						     certs.server.x5c,        --x5c
+						     certs.server.identifier, --iss
+						     certs.client.identifier, --sub
+						     certs.server.identifier, --aud
+						     nil) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.some_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_local_policy_unauth, err)
+      end)
+
+      it("PATCH certain attrs (M2M), allowed: all IDs, certain attrs; but wrong attrs requested", function()
+	 -- Config
+	 local req = requests.patch_pta_eta
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.server.private_key,
+						     certs.server.x5c,        --x5c
+						     certs.server.identifier, --iss
+						     certs.client.identifier, --sub
+						     certs.server.identifier, --aud
+						     nil) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.some_attrs
+	 end
+	 
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_local_policy_unauth, err)
+      end)
+
+   end)
    
 end)
