@@ -567,7 +567,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 
       it("PATCH single attr (M2M), allowed: all IDs, certain attrs; but wrong attr requested", function()
 	 -- Config
-	 local req = requests.patch_pta
+	 local req = requests.patch_eta
 	 local config = req.config
 	 local dict = req.dict
 	 dict.token = helpers.generate_client_token(certs.server.private_key,
@@ -609,6 +609,200 @@ describe("NGSI requests: handle_ngsi_request().", function()
 	 local err = ishare.handle_ngsi_request(config, dict)
 	 assert.is.truthy(err)
 	 assert.are.same(err_local_policy_unauth, err)
+      end)
+
+      it("PATCH certain attrs (M2M), allowed: single ID, all attrs; but wrong ID requested", function()
+	 -- Config
+	 local req = requests.patch_pta_pda
+	 local config = req.config
+	 local dict = helpers.copy(req.dict)
+	 dict.token = helpers.generate_client_token(certs.server.private_key,
+						     certs.server.x5c,        --x5c
+						     certs.server.identifier, --iss
+						     certs.client.identifier, --sub
+						     certs.server.identifier, --aud
+						     nil) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs_single_id
+	 end
+
+	 -- Change requested ID
+	 dict.request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:DELIVERYORDER:HAPPYPETS002/attrs/"
+	 
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_local_policy_unauth, err)
+      end)
+
+      it("PATCH certain attrs (M2M), allowed: all IDs, all attrs; but wrong type requested", function()
+	 -- Config
+	 local req = requests.patch_pta_pda
+	 local config = req.config
+	 local dict = helpers.copy(req.dict)
+	 dict.token = helpers.generate_client_token(certs.server.private_key,
+						     certs.server.x5c,        --x5c
+						     certs.server.identifier, --iss
+						     certs.client.identifier, --sub
+						     certs.server.identifier, --aud
+						     nil) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Change requested ID
+	 dict.request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:Weather:HAPPYPETS001/attrs/"
+	 
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_local_policy_unauth, err)
+      end)
+
+      it("PATCH single attr (H2M), Org allowed: all IDs, all attrs", function()
+	 -- Config
+	 local req = requests.patch_pta
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.client.private_key,
+						     certs.client.x5c,        --x5c
+						     certs.client.identifier, --iss
+						     certs.user.identifier,   --sub
+						     certs.server.identifier, --aud
+						     policies.user.all_attrs) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.falsy(err)
+      end)
+
+      it("PATCH certain attrs (H2M), Org allowed: all IDs, all attrs", function()
+	 -- Config
+	 local req = requests.patch_pta_pda
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.client.private_key,
+						     certs.client.x5c,        --x5c
+						     certs.client.identifier, --iss
+						     certs.user.identifier,   --sub
+						     certs.server.identifier, --aud
+						     policies.user.all_attrs) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.falsy(err)
+      end)
+
+      it("PATCH single attr (H2M), Org allowed: all IDs, all attrs; User allowed: all IDs, certain attrs; but wrong user attr requested", function()
+	 -- Config
+	 local req = requests.patch_eta
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.client.private_key,
+						     certs.client.x5c,        --x5c
+						     certs.client.identifier, --iss
+						     certs.user.identifier,   --sub
+						     certs.server.identifier, --aud
+						     policies.user.some_attrs) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_user_policy_unauth, err)
+      end)
+
+      it("PATCH certain attrs (H2M), Org allowed: all IDs, all attrs; User allowed: all IDs, certain attrs; but wrong user attrs requested", function()
+	 -- Config
+	 local req = requests.patch_pta_eta
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.client.private_key,
+						     certs.client.x5c,        --x5c
+						     certs.client.identifier, --iss
+						     certs.user.identifier,   --sub
+						     certs.server.identifier, --aud
+						     policies.user.some_attrs) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_user_policy_unauth, err)
+      end)
+
+      it("PATCH single attr (H2M), Org allowed: all IDs, all attrs; User allowed: single ID, all attrs; but wrong user ID requested", function()
+	 -- Config
+	 local req = requests.patch_pta
+	 local config = req.config
+	 local dict = helpers.copy(req.dict)
+	 dict.token = helpers.generate_client_token(certs.client.private_key,
+						     certs.client.x5c,        --x5c
+						     certs.client.identifier, --iss
+						     certs.user.identifier,   --sub
+						     certs.server.identifier, --aud
+						     policies.user.all_attrs_single_id) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Change ID of request
+	 dict.request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:DELIVERYORDER:HAPPYPETS005/attrs/pta"
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_user_policy_unauth, err)
+      end)
+
+      it("PATCH single attr (H2M), Org allowed: all IDs, all attrs; User allowed: all IDs, all attrs; but wrong user type requested", function()
+	 -- Config
+	 local req = requests.patch_pta
+	 local config = req.config
+	 local dict = helpers.copy(req.dict)
+	 dict.token = helpers.generate_client_token(certs.client.private_key,
+						     certs.client.x5c,        --x5c
+						     certs.client.identifier, --iss
+						     certs.user.identifier,   --sub
+						     certs.server.identifier, --aud
+						     policies.user.all_attrs) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Change ID of request
+	 dict.request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:Weather:HAPPYPETS001/attrs/pta"
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_user_policy_unauth, err)
       end)
 
    end)

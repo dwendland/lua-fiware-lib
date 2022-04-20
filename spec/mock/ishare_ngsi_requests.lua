@@ -165,9 +165,9 @@ _M.patch_pta.dict = {
 }
 
 -- Patch single attr eta
-_M["patch_pta"] = {}
-_M.patch_pta.config = default_config
-_M.patch_pta.dict = {
+_M["patch_eta"] = {}
+_M.patch_eta.config = default_config
+_M.patch_eta.dict = {
    token = "",
    method = "PATCH",
    request_uri = "https://gateway.com/orion/ngsi-ld/v1/entities/urn:ngsi-ld:DELIVERYORDER:HAPPYPETS001/attrs/eta",
@@ -181,7 +181,7 @@ _M.patch_pta.dict = {
    post_args = nil,
    uri_args = nil
 }
-_M.patch_pta.dict.request_headers["Content-Type"] = "application/json"
+_M.patch_eta.dict.request_headers["Content-Type"] = "application/json"
 
 -- Patch attrs pta&pda
 _M["patch_pta_pda"] = {}
