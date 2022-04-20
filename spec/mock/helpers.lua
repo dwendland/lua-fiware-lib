@@ -130,6 +130,17 @@ function _M.arrayEqual(a, b)
   return true
 end
 
+-- Copy table
+function _M.copy(obj, seen)
+  if type(obj) ~= 'table' then return obj end
+  if seen and seen[obj] then return seen[obj] end
+  local s = seen or {}
+  local res = setmetatable({}, getmetatable(obj))
+  s[obj] = res
+  for k, v in pairs(obj) do res[_M.copy(k, s)] = _M.copy(v, s) end
+  return res
+end
+
 -- Mock for ishare_helper.get_trusted_list()
 function _M.get_trusted_list_mock(config)
    return certs.trusted_list

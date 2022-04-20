@@ -32,3 +32,25 @@ To run the tests:
 docker run --rm -it -v $PWD:/fiware openresty/openresty:1.19.9.1-10-alpine-fat \
 	/bin/bash -c 'cd /fiware && ./run_tests.sh'
 ```
+
+
+
+### Development
+
+To test during development, run the container and install the busted framework:
+```shell
+docker run --rm -it -v $PWD:/fiware openresty/openresty:1.19.9.1-10-alpine-fat /bin/bash
+
+> cd /fiware
+> luarocks install busted
+```
+
+After code changes, compile the lib and run your tests:
+```shell
+> cd /fiware
+> luarocks make
+
+# E.g., run ngsi_helper.lua tests
+> resty spec/ngsi_helper_spec.lua
+```
+

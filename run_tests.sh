@@ -12,10 +12,12 @@ echo " Running tests"
 echo "================="
 echo ""
 
-echo "\nngsi_helper_spec"
+echo ""
+echo "ngsi_helper_spec"
 echo "-------------------"
 resty spec/ngsi_helper_spec.lua
 
-echo "\nishare_handler_spec"
+echo ""
+echo "ishare_handler_spec"
 echo "-------------------"
 resty spec/ishare_handler_spec.lua

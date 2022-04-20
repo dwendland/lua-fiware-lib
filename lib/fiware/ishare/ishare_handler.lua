@@ -103,7 +103,7 @@ local function compare_policies(user_policies, req_policies, user_policy_target,
 
    -- Check if user IDs are equal
    if user_policy_target ~= req_policy_target then
-      return nil, "User IDs do not match: "..user_policy_target.." != "..req_policy_target
+      return nil, "Target subject IDs do not match: "..user_policy_target.." != "..req_policy_target
    end
 
    -- Iterate over required policies
@@ -111,55 +111,51 @@ local function compare_policies(user_policies, req_policies, user_policy_target,
    local matching_policies = {}
    for req_policy_index, req_policy in ipairs(req_policies) do
       local matching_policy_found = false
-
+      
       -- Iterate over user policies, find policy matching this required policy
       -- If none is found, throw error
       for user_policy_index, user_policy in ipairs(user_policies) do
 	       local actions_ok, attrs_ok, type_ok, ids_ok = true, true, true, true
-
+	       
 	       -- Compare policy parameter: action
 	       local user_actions = user_policy.target.actions
 	       local req_actions = req_policy.target.actions
 	       for index, value in ipairs(req_actions) do
 	          if not has_value(user_actions, value) then
 	             -- Missing action in policy
-	             --return "User policy does not contain action "..value
 	             actions_ok = false
 	          end
 	       end
-
+	       
 	       -- Compare policy parameter: attributes
 	       local user_attrs = user_policy.target.resource.attributes
 	       local req_attrs = req_policy.target.resource.attributes
 	       for index, value in ipairs(req_attrs) do
 	          if (not has_value(user_attrs, "*")) and (not has_value(user_attrs, value)) then
 	             -- Missing required attribute
-	             --return "User policy does not contain required attribute: "..value
 	             attrs_ok = false
 	          end
 	       end
-
+	       
 	       -- Compare policy parameter: type
 	       local user_type = user_policy.target.resource.type
 	       local req_type = req_policy.target.resource.type
 	       if user_type ~= req_type then
 	          -- Wrong resource/entity type
-	          --return "User policy resource is not of required type: "..req_type.." != "..user_type
 	          type_ok = false
 	       end
-
+	       
 	       -- Compare policy parameter: identifier
 	       local user_ids = user_policy.target.resource.identifiers
 	       local req_ids = req_policy.target.resource.identifiers
 	       -- Check for exact entity IDs
 	       for index, value in ipairs(req_ids) do
-	          if (not has_value(user_attrs, "*")) and (not has_value(user_ids, value)) then
+		  if (not has_value(user_ids, "*")) and (not has_value(user_ids, value)) then
 	             -- Missing required identifier
-	             --return "User policy does not contain required identifier: "..value
 	             ids_ok = false
 	          end
 	       end
-
+	       
 	       -- Policy ok?
 	       if actions_ok and attrs_ok and type_ok and ids_ok then
 	          --return user_policy, nil
@@ -169,7 +165,7 @@ local function compare_policies(user_policies, req_policies, user_policy_target,
       end -- End user policy iteration
 
       if not matching_policy_found then
-	       return nil, "None of the user policies matched a required policy for this action"
+	       return nil, "None of the delivered policies matched a required policy for this action"
       end
 
    end -- End required policy iteration
@@ -282,7 +278,7 @@ function _M.handle_ngsi_request(config, dict)
    if err then
       return err
    end
-
+   
    -- Check for user policy
    if not decoded_jwt["payload"] then
       return "Missing payload in JWT"
@@ -361,12 +357,25 @@ function _M.handle_ngsi_request(config, dict)
    if local_eori ~= user_policy_issuer then
       -- User policy was not issued by local authority or there was no user policy
       -- Check at local AR for policy issued by local EORI
+      --   M2M: user_policy_issuer == sub of access token (target subject)
+      --   H2M: user_policy_issuer == issuer of user policy
       local local_user_del_evi, err = _M.get_delegation_evidence_ext(config, local_eori, user_policy_issuer, req_policies, local_token_url, local_ar_eori, local_delegation_url, nil)
       if err then
 	       return "Error when retrieving policies from local AR: "..err
       end
       if local_user_del_evi["policySets"] and local_user_del_evi["policySets"][1] and local_user_del_evi["policySets"][1]["policies"] then
 	       local local_user_policies = local_user_del_evi["policySets"][1]["policies"]
+	 
+	       -- Compare local AR policy with required policy
+	       -- M2M: user_policy_issuer == sub of access token (target subject)
+	       -- H2M: user_policy_issuer == issuer of user policy
+	       local local_user_policy_targetsub = local_user_del_evi["target"]["accessSubject"]
+	       local matching_policies, err = compare_policies(local_user_policies, req_policies, local_user_policy_targetsub, user_policy_issuer)
+	       if err then
+	          return "Local AR policy not authorized: "..err
+	       end
+
+	       -- Check for access permit and expiration
 	       err = check_permit_policies(local_user_policies, local_user_del_evi["notBefore"], local_user_del_evi["notOnOrAfter"])
 	       if err then
 	          return "Local AR policy not authorized: "..err
