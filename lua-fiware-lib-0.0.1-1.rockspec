@@ -1,10 +1,8 @@
---rockspec_format = '2.0'
 package = 'lua-fiware-lib'
 version = '0.0.1-1'
 
 local github_account_name = "dwendland"
 local github_repo_name = "lua-fiware-lib"
---local git_checkout = package_version == "dev" and "master" or package_version
 source = {
   url = "git://github.com/"..github_account_name.."/"..github_repo_name..".git",
 }
@@ -23,10 +21,7 @@ dependencies = {
   'lua >= 5.1',
   'lua-resty-openssl >= 0.8.1',
   "lua-resty-http == 0.16.1",
-  "lua-resty-jwt == 0.2.3",
-  --"lua-resty-jwt == 0.2.0",
-  --"lua-cjson == 2.1.0.6-1"
-  --"lua-cjson == 1.0.0"
+  "lua-resty-jwt == 0.2.3"
 }
 
 build = {
