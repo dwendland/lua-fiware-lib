@@ -29,6 +29,17 @@ local function tohex(str)
    end))
 end
 
+-- Checks if a table with a list of values contains a specific element
+local function has_value (tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
 -- Generate random string with characters and digits
 local function random_string(l)
    local chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -258,6 +269,32 @@ function _M.get_delegation_evidence(issuer, target, policies, delegation_url, ac
    return decoded_token["payload"]["delegationEvidence"], nil
 end
 
+-- Get delegation evidence from external authorisation registry
+function _M.get_delegation_evidence_ext(config, issuer, target, policies, token_url, ar_eori, delegation_url, prev_steps)
+   local del_evi = {}
+
+   -- Check config for AR
+   local err = _M.check_config_ar(config)
+   if err then
+      return nil, err
+   end
+
+   -- Get token at external AR
+   local local_eori = config["jws"]["identifier"]
+   local token, err = _M.get_token(config, token_url, local_eori, local_eori, ar_eori)
+   if err then
+      return nil, err
+   end
+
+   -- Get delegation evidence from external AR
+   del_evi, err = _M.get_delegation_evidence(issuer, target, policies, delegation_url, token, prev_steps)
+   if err then
+      return nil, err
+   end
+
+   return del_evi, nil
+end
+
 function _M.get_trusted_list(config)
 
    -- Get config parameters
@@ -431,6 +468,113 @@ function _M.validate_ishare_jwt(config, token)
    end
 
    return decoded_token, nil
+end
+
+-- Compare issued/user policies with required policies
+-- Returns all matching issued policies
+-- Returns error, if there is no issued policy for any of the required policies
+function _M.compare_policies(user_policies, req_policies, user_policy_target, req_policy_target)
+
+   -- Check if user IDs are equal
+   if user_policy_target ~= req_policy_target then
+      return nil, "Target subject IDs do not match: "..user_policy_target.." != "..req_policy_target
+   end
+
+   -- Iterate over required policies
+   -- Add matching user policy to array
+   local matching_policies = {}
+   for req_policy_index, req_policy in ipairs(req_policies) do
+      local matching_policy_found = false
+      
+      -- Iterate over user policies, find policy matching this required policy
+      -- If none is found, throw error
+      for user_policy_index, user_policy in ipairs(user_policies) do
+	       local actions_ok, attrs_ok, type_ok, ids_ok = true, true, true, true
+	       
+	       -- Compare policy parameter: action
+	       local user_actions = user_policy.target.actions
+	       local req_actions = req_policy.target.actions
+	       for index, value in ipairs(req_actions) do
+	          if not has_value(user_actions, value) then
+	             -- Missing action in policy
+	             actions_ok = false
+	          end
+	       end
+	       
+	       -- Compare policy parameter: attributes
+	       local user_attrs = user_policy.target.resource.attributes
+	       local req_attrs = req_policy.target.resource.attributes
+	       for index, value in ipairs(req_attrs) do
+		  if (not has_value(user_attrs, "*")) and (not has_value(user_attrs, value)) then
+	             -- Missing required attribute
+	             attrs_ok = false
+	          end
+	       end
+	       
+	       -- Compare policy parameter: type
+	       local user_type = user_policy.target.resource.type
+	       local req_type = req_policy.target.resource.type
+	       if user_type ~= req_type then
+	          -- Wrong resource/entity type
+	          type_ok = false
+	       end
+	       
+	       -- Compare policy parameter: identifier
+	       local user_ids = user_policy.target.resource.identifiers
+	       local req_ids = req_policy.target.resource.identifiers
+	       -- Check for exact entity IDs
+	       for index, value in ipairs(req_ids) do
+		  if (not has_value(user_ids, "*")) and (not has_value(user_ids, value)) then
+	             -- Missing required identifier
+	             ids_ok = false
+	          end
+	       end
+	       
+	       -- Policy ok?
+	       if actions_ok and attrs_ok and type_ok and ids_ok then
+	          --return user_policy, nil
+	          table.insert(matching_policies, user_policy)
+	          matching_policy_found = true
+	       end
+      end -- End user policy iteration
+
+      if not matching_policy_found then
+	       return nil, "None of the delivered policies matched a required policy for this action"
+      end
+
+   end -- End required policy iteration
+
+   --return nil, "None of the user policies matched required policy for this action"
+   return matching_policies, nil
+end
+
+-- Check for expiration and "Permit" rule in required user/org policies
+function _M.check_permit_policies(policies, notBefore, notAfter)
+
+   -- Check expiration of policies
+   local now = os.time()
+   if now < notBefore or now >= notAfter then
+      return "Policy has expired or is not yet valid"
+   end
+
+   -- Iterate over user policies, find policy matching this required policy
+   -- If none is found, throw error
+   for policy_index, policy in ipairs(policies) do
+      -- Check for Permit rule
+      local rules = policy.rules
+      local found = false
+      for index, value in ipairs(rules) do
+	       if value["effect"] and value["effect"] == "Permit" then
+	          found = true
+	          break
+	       end
+      end
+      if not found then
+	       return "No Permit rule found in one of the user/organisation policies required for this request"
+      end
+   end
+
+   return nil
 end
 
 

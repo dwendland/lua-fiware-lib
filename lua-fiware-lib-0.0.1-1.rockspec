@@ -29,6 +29,7 @@ build = {
   modules = {
     ['fiware.ishare.ishare_helper'] = 'lib/fiware/ishare/ishare_helper.lua',
     ['fiware.ishare.ishare_handler'] = 'lib/fiware/ishare/ishare_handler.lua',
+    ['fiware.ishare.sp_auth_endpoint_handler'] = 'lib/fiware/ishare/sp_auth_endpoint_handler.lua',
     ['fiware.ngsi.ngsi_helper'] = 'lib/fiware/ngsi/ngsi_helper.lua'
   }
 }

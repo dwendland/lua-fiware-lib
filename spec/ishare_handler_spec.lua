@@ -41,7 +41,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -63,7 +63,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 
@@ -85,7 +85,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -108,7 +108,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -131,7 +131,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs_expired
 	 end 
 
@@ -154,7 +154,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 
@@ -177,7 +177,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 
@@ -203,7 +203,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -225,7 +225,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 
@@ -247,7 +247,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 
@@ -270,7 +270,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 
@@ -296,7 +296,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -318,7 +318,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs_single_id
 	 end
 
@@ -341,7 +341,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.all_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -363,7 +363,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 	 
@@ -385,7 +385,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs_single_id) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 	 
@@ -407,7 +407,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs_post) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 	 
@@ -430,7 +430,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 	 
@@ -453,7 +453,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.all_attrs_single_id) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 	 
@@ -476,7 +476,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 	 
@@ -500,7 +500,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    local org_policy = helpers.copy(policies.server.all_attrs)
 	    org_policy.target.accessSubject = certs.client.identifier_alt
 
@@ -534,7 +534,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -556,7 +556,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -578,7 +578,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 
@@ -601,7 +601,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.some_attrs
 	 end
 	 
@@ -624,7 +624,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs_single_id
 	 end
 
@@ -650,7 +650,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     nil) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -676,7 +676,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.all_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -698,7 +698,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.all_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -720,7 +720,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -743,7 +743,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.some_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -766,7 +766,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.all_attrs_single_id) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 
@@ -792,7 +792,7 @@ describe("NGSI requests: handle_ngsi_request().", function()
 						     policies.user.all_attrs) -- delegation_evidence
 
 	 -- Test mocks
-	 ishare.get_delegation_evidence_ext = function()
+	 ishare_helper.get_delegation_evidence_ext = function()
 	    return policies.server.all_attrs
 	 end
 

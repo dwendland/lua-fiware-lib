@@ -167,6 +167,158 @@ _M.server.some_attrs_expired = {
 }
 _M.server.some_attrs_expired.policySets[1].policies[1].target.resource.type = "DELIVERYORDER"
 
+-- Server policy - EndpointConfig, only POST
+_M.server.post_endpoint_config = {
+   notBefore = valid_from,
+   notOnOrAfter = valid_until,
+   policyIssuer = certs.server.identifier,
+   target = {
+      accessSubject = certs.client.identifier
+   },
+   policySets = {
+      {
+	 policies = {
+	    {
+	       target = {
+		  resource = {
+		     --type = "DELIVERYORDER",
+		     identifiers = {
+			"*"
+		     },
+		     attributes = {
+			"*"
+		     }
+		  },
+		  actions = {
+		     "POST"
+		  }
+	       },
+	       rules = {
+		  {
+		     effect = "Permit"
+		  }
+	       }
+	    }
+	 }
+      }
+   }
+}
+_M.server.post_endpoint_config.policySets[1].policies[1].target.resource.type = "EndpointConfig"
+
+-- Server policy - EndpointConfig, only POST, alternative issuer
+_M.server.post_endpoint_config_alt_issuer = {
+   notBefore = valid_from,
+   notOnOrAfter = valid_until,
+   policyIssuer = certs.server.identifier_alt,
+   target = {
+      accessSubject = certs.client.identifier
+   },
+   policySets = {
+      {
+	 policies = {
+	    {
+	       target = {
+		  resource = {
+		     --type = "DELIVERYORDER",
+		     identifiers = {
+			"*"
+		     },
+		     attributes = {
+			"*"
+		     }
+		  },
+		  actions = {
+		     "POST"
+		  }
+	       },
+	       rules = {
+		  {
+		     effect = "Permit"
+		  }
+	       }
+	    }
+	 }
+      }
+   }
+}
+_M.server.post_endpoint_config_alt_issuer.policySets[1].policies[1].target.resource.type = "EndpointConfig"
+
+-- Server policy - EndpointConfig, only POST, expired
+_M.server.post_endpoint_config_expired = {
+   notBefore = valid_from,
+   notOnOrAfter = valid_from+1,
+   policyIssuer = certs.server.identifier,
+   target = {
+      accessSubject = certs.client.identifier
+   },
+   policySets = {
+      {
+	 policies = {
+	    {
+	       target = {
+		  resource = {
+		     --type = "DELIVERYORDER",
+		     identifiers = {
+			"*"
+		     },
+		     attributes = {
+			"*"
+		     }
+		  },
+		  actions = {
+		     "POST"
+		  }
+	       },
+	       rules = {
+		  {
+		     effect = "Permit"
+		  }
+	       }
+	    }
+	 }
+      }
+   }
+}
+_M.server.post_endpoint_config_expired.policySets[1].policies[1].target.resource.type = "EndpointConfig"
+
+-- Server policy - EndpointConfig, only GET, all configs
+_M.server.get_endpoint_config_all = {
+   notBefore = valid_from,
+   notOnOrAfter = valid_until,
+   policyIssuer = certs.server.identifier,
+   target = {
+      accessSubject = certs.client.identifier
+   },
+   policySets = {
+      {
+	 policies = {
+	    {
+	       target = {
+		  resource = {
+		     --type = "DELIVERYORDER",
+		     identifiers = {
+			"*"
+		     },
+		     attributes = {
+			"*"
+		     }
+		  },
+		  actions = {
+		     "GET"
+		  }
+	       },
+	       rules = {
+		  {
+		     effect = "Permit"
+		  }
+	       }
+	    }
+	 }
+      }
+   }
+}
+_M.server.get_endpoint_config_all.policySets[1].policies[1].target.resource.type = "EndpointConfig"
+
 -- User policy - All actions and IDs, all attrs
 _M.user.all_attrs = {
    notBefore = valid_from,
