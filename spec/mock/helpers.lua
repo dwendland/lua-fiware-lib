@@ -32,7 +32,35 @@ local function random_string(l)
    
 end
 
-function _M.generate_client_token(private_key, x5c, iss, sub, aud, delegation_evidence)
+-- Creates a table with the x5c array from a PEM cert chain
+local function get_x5c_table(pem_certs)
+   local x5c = {}
+   local start = 1
+   local b = "-----BEGIN CERTIFICATE-----"
+   local e = "-----END CERTIFICATE-----"
+   local bl = string.len(b)
+   local el = string.len(e)
+   while start do
+      local begin_cert = string.find(pem_certs, b, start)
+      local end_cert = string.find(pem_certs, e, start)
+      if (not begin_cert) or (not end_cert) then
+	 start = nil
+      else
+	 local c = string.sub(pem_certs, begin_cert+bl, end_cert-1)
+	 c = string.gsub(c, "\n", "") -- Replace newlines
+	 table.insert(x5c, c)
+	 start = end_cert+el
+      end      
+   end
+   
+   return x5c
+   
+end
+
+function _M.generate_client_token(private_key, x5c_certs, iss, sub, aud, delegation_evidence)
+   -- Create x5c table
+   local x5c = get_x5c_table(x5c_certs)
+   
    -- Build JWT Header
    local header = {
       typ = "JWT",

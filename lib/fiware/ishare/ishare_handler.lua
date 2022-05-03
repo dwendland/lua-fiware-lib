@@ -72,8 +72,8 @@ end
 -- {
 --   jws = {
 --     identifier = "", (Identifier/EORI of local authority)
---     private_key = "", (as PEM string)
---     x5c = {table/array with base64 encoded certificates, full chain},
+--     private_key = "", (private key as PEM string)
+--     x5c = "", (cert chain as PEM string)
 --     root_ca_file = "", (path to root CA file, required if no iSHARE Satellite information is provided below)
 --   },
 --   authorisation_registry = {

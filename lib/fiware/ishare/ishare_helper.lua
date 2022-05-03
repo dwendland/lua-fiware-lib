@@ -40,6 +40,30 @@ local function has_value (tab, val)
     return false
 end
 
+-- Creates a table with the x5c array from a PEM cert chain
+local function get_x5c_table(pem_certs)
+
+   local x5c = {}
+   local start = 1
+   local b = "-----BEGIN CERTIFICATE-----"
+   local e = "-----END CERTIFICATE-----"
+   local bl = string.len(b)
+   local el = string.len(e)
+   while start do
+      local begin_cert = string.find(pem_certs, b, start)
+      local end_cert = string.find(pem_certs, e, start)
+      if (not begin_cert) or (not end_cert) then
+	 start = nil
+      else
+	 table.insert(x5c, string.sub(pem_certs, begin_cert+bl, end_cert-1))
+	 start = end_cert+el
+      end      
+   end
+
+   return x5c
+   
+end
+
 -- Generate random string with characters and digits
 local function random_string(l)
    local chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -149,8 +173,11 @@ end
 function _M.get_token(config, token_url, iss, sub, aud)
    -- Get certificates and key
    local private_key = config["jws"]["private_key"]
-   local x5c_certs = config["jws"]["x5c"]
-
+   local x5c_certs = get_x5c_table(config["jws"]["x5c"])
+   if not x5c_certs then
+      return nil, "Error when parsing x5c certificate chain of local authority"
+   end
+   
    -- Build JWT Header
    local header = {
       typ = "JWT",
