@@ -1,0 +1,91 @@
+name: Pre-Release
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+      - uses: leafo/gh-actions-lua@v9
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Run tests
+        run: ./run_tests.sh
+
+  generate-version:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.out.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - id: bump
+        uses: zwaldowski/match-label-action@v1
+        with:
+          allowed: major,minor,patch
+
+      - uses: zwaldowski/semver-release-action@v2
+        with:
+          dry_run: true
+          bump: ${{ steps.bump.outputs.match }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get PR Number
+        id: pr_number
+        run: echo "::set-output name=nr::$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')"
+
+      - name: Set version output
+        id: out
+        run: echo "::set-output name=version::$(echo ${VERSION}-PRE-${{ steps.pr_number.outputs.nr }})"
+
+  git-release:
+    needs: ["generate-version"]
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${{ needs.generate-version.outputs.version }}
+          prerelease: true
+          title: ${{ needs.generate-version.outputs.version }}
+
+  lua-fiware-lib:
+
+    needs: [ "generate-version" ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Parse rockspec
+        uses: edgardleal/mustache-template-action@v1.0.0
+        env:
+          GITHUB_ORGANISATION: fiware
+          GITHUB_REPO: lua-fiware-lib
+          VERSION: ${{ needs.generate-version.outputs.version }}
+        with:
+          input: rockspec.mustache
+          output: lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
+      
+      - uses: leafo/gh-actions-lua@v9
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Upload rockspec
+        run: luarocks upload lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
+
