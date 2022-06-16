@@ -1,6 +1,6 @@
 #! /bin/bash
 
-cd $BASE_DIR
+cd /fiware
 
 luarocks install busted
 luarocks make
