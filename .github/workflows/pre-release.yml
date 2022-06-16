@@ -67,7 +67,7 @@ jobs:
 
   lua-fiware-lib:
 
-    needs: [ "generate-version" ]
+    needs: [ "git-release" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -86,5 +86,5 @@ jobs:
       - uses: leafo/gh-actions-luarocks@v4
 
       - name: Upload rockspec
-        run: luarocks upload lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
+        run: luarocks upload --api-key=${{ secrets.API_KEY }} lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
 
