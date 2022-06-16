@@ -66,31 +66,4 @@ jobs:
           prerelease: true
           title: ${{ needs.generate-version.outputs.version }}
 
-  lua-fiware-lib:
-
-    needs: [ "git-release", "generate-version" ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '>=1.17.0'
-
-      - name: Prepare values
-        run: | 
-          echo GITHUB_ORGANISATION: fiware >> values.yaml
-          echo GITHUB_REPO: lua-fiware-libware >> values.yaml
-          echo VERSION: ${{ needs.generate-version.outputs.version }} >> values.yaml
-
-      - name: Parse rockspec
-        run: |
-          go install github.com/cbroglie/mustache/cmd/mustache@v1.3.1
-          ~/go/bin/mustache values.yaml rockspec.mustache > lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
-      
-      - uses: leafo/gh-actions-lua@v9
-      - uses: leafo/gh-actions-luarocks@v4
-
-      - name: Upload rockspec
-        run: luarocks upload --api-key=${{ secrets.API_KEY }} lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
-
+ 
