@@ -74,16 +74,16 @@ jobs:
         run: | 
           echo GITHUB_ORGANISATION: fiware >> values.yaml
           echo GITHUB_REPO: lua-fiware-lib >> values.yaml
-          echo VERSION: ${{ needs.generate-version.outputs.version }} >> values.yaml
+          echo VERSION: ${{ needs.generate-version.outputs.version }}-1 >> values.yaml
 
       - name: Parse rockspec
         run: |
           go install github.com/cbroglie/mustache/cmd/mustache@v1.3.1
-          ~/go/bin/mustache values.yaml rockspec.mustache > lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
+          ~/go/bin/mustache values.yaml rockspec.mustache > lua-fiware-lib-${{ needs.generate-version.outputs.version }}-1.rockspec
       
       - uses: leafo/gh-actions-lua@v9
       - uses: leafo/gh-actions-luarocks@v4
 
       - name: Upload rockspec
-        run: luarocks upload --api-key=${{ secrets.API_KEY }} lua-fiware-lib-${{ needs.generate-version.outputs.version }}.rockspec
+        run: luarocks upload --api-key=${{ secrets.API_KEY }} lua-fiware-lib-${{ needs.generate-version.outputs.version }}-1.rockspec
 
