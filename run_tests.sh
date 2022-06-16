@@ -1,5 +1,7 @@
 #! /bin/bash
 
+cd $BASE_DIR
+
 luarocks install busted
 luarocks make
 

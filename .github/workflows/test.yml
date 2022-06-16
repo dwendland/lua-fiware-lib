@@ -15,4 +15,5 @@ jobs:
       - uses: leafo/gh-actions-luarocks@v4
 
       - name: Run tests
-        run: ./run_tests.sh
+        run: |
+          docker run --rm -it -v $PWD:/fiware openresty/openresty:1.19.9.1-10-alpine-fat /bin/bash -c 'cd /fiware && ./run_tests.sh'
