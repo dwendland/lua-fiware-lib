@@ -84,6 +84,9 @@ jobs:
       - uses: leafo/gh-actions-lua@v9
       - uses: leafo/gh-actions-luarocks@v4
 
+
       - name: Upload rockspec
-        run: luarocks upload --api-key=${{ secrets.API_KEY }} lua-fiware-lib-${{ needs.generate-version.outputs.version }}-1.rockspec
+        run: |
+          luarocks install dkjson
+          luarocks upload --api-key=${{ secrets.API_KEY }} lua-fiware-lib-${{ needs.generate-version.outputs.version }}-1.rockspec
 
