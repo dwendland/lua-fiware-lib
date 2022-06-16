@@ -67,7 +67,7 @@ jobs:
 
   lua-fiware-lib:
 
-    needs: [ "git-release" ]
+    needs: [ "git-release", "generate-version" ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
