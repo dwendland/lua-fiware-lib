@@ -1,7 +1,5 @@
 #! /bin/bash
 
-cd /fiware
-
 luarocks install busted
 luarocks make
 
