@@ -58,6 +58,7 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: ${{ needs.generate-version.outputs.version }}
           title: ${{ needs.generate-version.outputs.version }}
+          prerelease: false
 
   lua-fiware-lib:
 
@@ -75,6 +76,7 @@ jobs:
           echo GITHUB_ORGANISATION: fiware >> values.yaml
           echo GITHUB_REPO: lua-fiware-lib >> values.yaml
           echo VERSION: ${{ needs.generate-version.outputs.version }}-1 >> values.yaml
+          echo TAG: ${{ needs.generate-version.outputs.version }} >> values.yaml
 
       - name: Parse rockspec
         run: |
