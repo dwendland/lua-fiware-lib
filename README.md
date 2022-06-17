@@ -19,7 +19,6 @@ luarocks make
 
 
 
-
 ## Testing
 
 The [busted](http://olivinelabs.com/busted/) framework is used. 
