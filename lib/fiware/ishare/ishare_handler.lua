@@ -162,16 +162,16 @@ function _M.handle_ngsi_request(config, dict)
       else
 	       return "User policy could not be found in JWT"
       end
-   elseif decoded_payload["authorisation_registry"] then
+   elseif decoded_payload["authorisationRegistry"] then
       -- AR info provided in JWT, get user policy from AR
-      local token_url = decoded_payload["authorisation_registry"]["token_endpoint"]
-      local delegation_url = decoded_payload["authorisation_registry"]["delegation_endpoint"]
-      local ar_eori = decoded_payload["authorisation_registry"]["identifier"]
+      local token_url = decoded_payload["authorisationRegistry"]["token_endpoint"]
+      local delegation_url = decoded_payload["authorisationRegistry"]["delegation_endpoint"]
+      local ar_eori = decoded_payload["authorisationRegistry"]["identifier"]
       local issuer = decoded_payload["iss"]
       local target = decoded_payload["sub"]
       local api_key = decoded_payload["api_key"]
       local user_del_evi = {}
-      user_del_evi, err = ishare.get_delegation_evidence_ext(config, issuer, target, req_policies, token_url, ar_eori, delegation_url, api_key)
+      user_del_evi, err = ishare.get_delegation_evidence_ext(config, issuer, target, req_policies, token_url, ar_eori, delegation_url, nil)
       if err then
 	       return "Error when retrieving delegation evidence from user AR: "..err
       end
