@@ -17,8 +17,6 @@ For installation of the library and all necessary dependencies run:
 luarocks make
 ```
 
-
-
 ## Testing
 
 The [busted](http://olivinelabs.com/busted/) framework is used. 
