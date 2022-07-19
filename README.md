@@ -13,6 +13,8 @@ Requirements:
 * `lua >= 5.1`
 * `openresty >= 1.19.9`
 
+This project is part of [FIWARE](https://www.fiware.org/). For more information check the FIWARE Catalogue entry for the
+[API Management](https://github.com/Fiware/catalogue/tree/master/security).
 
 ## Installation
 
