@@ -2,6 +2,7 @@
 
 [![](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/api-management.svg)](https://www.fiware.org/developers/catalogue/)
 [![License badge](https://img.shields.io/github/license/FIWARE/lua-fiware-lib.svg)](https://opensource.org/licenses/MIT)
+[![](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](http://stackoverflow.com/questions/tagged/fiware)
 <br>
 ![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
 
