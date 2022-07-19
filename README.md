@@ -1,5 +1,10 @@
 # lua-fiware-lib
 
+[![](https://nexus.lab.fiware.org/repository/raw/public/badges/chapters/api-management.svg)](https://www.fiware.org/developers/catalogue/)
+[![License badge](https://img.shields.io/github/license/FIWARE/lua-fiware-lib.svg)](https://opensource.org/licenses/MIT)
+<br>
+![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
+
 This library provides several lua modules offering 
 common functionalities required in FIWARE architectures
 
@@ -13,6 +18,7 @@ Requirements:
 The Lua package manager [LuaRocks](https://luarocks.org/) is required. 
 
 For installation of the library and all necessary dependencies run:
+
 ```shell
 luarocks make
 ```
@@ -25,6 +31,7 @@ OpenResty provides a Docker image which can be used to run the tests
 without setting up a full environment.
 
 To run the tests:
+
 ```shell
 docker run --rm -it -v $PWD:/fiware openresty/openresty:1.19.9.1-10-alpine-fat \
 	/bin/bash -c 'cd /fiware && ./run_tests.sh'
