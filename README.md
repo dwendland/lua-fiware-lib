@@ -4,6 +4,7 @@
 [![License badge](https://img.shields.io/github/license/FIWARE/lua-fiware-lib.svg)](https://opensource.org/licenses/MIT)
 [![](https://img.shields.io/badge/tag-fiware-orange.svg?logo=stackoverflow)](http://stackoverflow.com/questions/tagged/fiware)
 <br>
+![CI](https://github.com/FIWARE/lua-fiware-lib/actions/workflows/test.yml/badge.svg)
 ![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
 
 This library provides several lua modules offering 
