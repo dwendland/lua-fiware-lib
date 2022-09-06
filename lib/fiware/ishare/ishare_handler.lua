@@ -151,7 +151,7 @@ function _M.handle_ngsi_request(config, dict)
    local user_policy_targetsub = nil
    local del_notBefore = nil
    local del_notAfter = nil
-   if decoded_payload["delegationEvidence"] and decoded_payload["delegationEvidence"]["policySets"] then
+   if decoded_payload["delegationEvidence"] and decoded_payload["delegationEvidence"] ~= cjson.null and decoded_payload["delegationEvidence"]["policySets"] then
       -- Policy already provided in JWT
       if decoded_payload["delegationEvidence"]["policySets"][1] and decoded_payload["delegationEvidence"]["policySets"][1]["policies"] then
 	       user_policies = decoded_payload["delegationEvidence"]["policySets"][1]["policies"]
@@ -162,7 +162,7 @@ function _M.handle_ngsi_request(config, dict)
       else
 	       return "User policy could not be found in JWT"
       end
-   elseif decoded_payload["authorisationRegistry"] then
+   elseif decoded_payload["authorisationRegistry"] and decoded_payload["authorisationRegistry"] ~= cjson.null then
       -- AR info provided in JWT, get user policy from AR
       local token_url = decoded_payload["authorisationRegistry"]["token_endpoint"]
       local delegation_url = decoded_payload["authorisationRegistry"]["delegation_endpoint"]

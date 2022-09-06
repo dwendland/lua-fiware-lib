@@ -82,6 +82,8 @@ function _M.generate_client_token(private_key, x5c_certs, iss, sub, aud, delegat
    -- Add delegation evidence
    if delegation_evidence then
       payload.delegationEvidence = delegation_evidence
+   else
+      payload.delegationEvidence = cjson.null
    end
 
    -- Add aud
