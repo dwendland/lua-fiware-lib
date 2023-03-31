@@ -187,13 +187,10 @@ function _M.get_token(config, token_url, iss, sub, aud)
    
    -- Build JWT Payload
    local now = os.time()
-   local full_aud = {}
-   table.insert(full_aud, aud)
-   table.insert(full_aud, token_url)
    local payload = {
       iss = iss,
       sub = sub,
-      aud = full_aud,
+      aud = aud,
       jti = random_string(32), 
       exp = now+30, 
       iat = now
