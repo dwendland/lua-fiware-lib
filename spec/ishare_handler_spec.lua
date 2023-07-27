@@ -19,6 +19,7 @@ local err_jwt_iss_unequal = "Certificate serial number "..certs.server.identifie
 local err_jwt_sub_unequal_local = "Local AR policy not authorized: Target subject IDs do not match: "..certs.client.identifier.." != "..certs.client.identifier_alt
 local err_jwt_sub_unequal_local2 = "Local AR policy not authorized: Target subject IDs do not match: "..certs.client.identifier_alt.." != "..certs.client.identifier
 local err_jwt_sub_unequal_user = "Unauthorized user policy: Target subject IDs do not match: "..certs.user.identifier.." != "..certs.user.identifier_alt
+local err_policy_issuer_unequal_lwt_iss = "Issuer of the user policy does not match issuer of the provided token"
 
 -- Tests
 describe("NGSI requests: handle_ngsi_request().", function()
@@ -392,6 +393,29 @@ describe("NGSI requests: handle_ngsi_request().", function()
 	 -- Call
 	 local err = ishare.handle_ngsi_request(config, dict)
 	 assert.is.falsy(err)
+      end)
+
+      it("GET single entity (H2M), Org allowed: all IDs, all attrs; but wrong user policy issuer not matching token issuer", function()
+	 -- Config
+	 local req = requests.get_1
+	 local config = req.config
+	 local dict = req.dict
+	 dict.token = helpers.generate_client_token(certs.client.private_key,
+						     certs.client.x5c,        --x5c
+						     certs.client.identifier, --iss
+						     certs.user.identifier,   --sub
+						     certs.server.identifier, --aud
+						     policies.user.all_attrs_fake_iss) -- delegation_evidence
+
+	 -- Test mocks
+	 ishare_helper.get_delegation_evidence_ext = function()
+	    return policies.server.all_attrs
+	 end
+
+	 -- Call
+	 local err = ishare.handle_ngsi_request(config, dict)
+	 assert.is.truthy(err)
+	 assert.are.same(err_policy_issuer_unequal_lwt_iss, err)
       end)
 
       it("GET single entity and specific attrs (H2M), Org allowed: all IDs, all attrs; User allowed: certain attrs, only POST; wrong user action requested", function()
