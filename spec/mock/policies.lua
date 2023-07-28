@@ -509,4 +509,42 @@ _M.user.all_attrs_single_id = {
 }
 _M.user.all_attrs_single_id.policySets[1].policies[1].target.resource.type = "DELIVERYORDER"
 
+-- User policy - All actions, all attrs, fake issuer
+_M.user.all_attrs_fake_iss = {
+   notBefore = valid_from,
+   notOnOrAfter = valid_until,
+   policyIssuer = certs.client.identifier_alt,
+   target = {
+      accessSubject = certs.user.identifier
+   },
+   policySets = {
+      {
+	 policies = {
+	    {
+	       target = {
+		  resource = {
+		     --type = "DELIVERYORDER",
+		     identifiers = {
+			"*"
+		     },
+		     attributes = {
+			"*"
+		     }
+		  },
+		  actions = {
+		     "PATCH", "GET", "POST", "DELETE"
+		  }
+	       },
+	       rules = {
+		  {
+		     effect = "Permit"
+		  }
+	       }
+	    }
+	 }
+      }
+   }
+}
+_M.user.all_attrs_fake_iss.policySets[1].policies[1].target.resource.type = "DELIVERYORDER"
+
 return _M

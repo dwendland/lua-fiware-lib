@@ -162,6 +162,11 @@ function _M.handle_ngsi_request(config, dict)
       else
 	       return "User policy could not be found in JWT"
       end
+
+      -- Check that policy issuer equals the token issuer to prevent faking another issuer
+      if user_policy_issuer ~= decoded_payload["iss"] then
+	 return "Issuer of the user policy does not match issuer of the provided token"
+      end
    elseif decoded_payload["authorisationRegistry"] and decoded_payload["authorisationRegistry"] ~= cjson.null then
       -- AR info provided in JWT, get user policy from AR
       local token_url = decoded_payload["authorisationRegistry"]["token_endpoint"]
@@ -183,6 +188,11 @@ function _M.handle_ngsi_request(config, dict)
 	       del_notAfter = user_del_evi["notOnOrAfter"]
       else
 	       return "User policy could not be found in user AR response"
+      end
+
+      -- Check that policy issuer equals the token issuer to prevent faking another issuer
+      if user_policy_issuer ~= decoded_payload["iss"] then
+	 return "Issuer of the user policy does not match issuer of the provided token"
       end
    else
       -- Info in JWT missing, assuming M2M
