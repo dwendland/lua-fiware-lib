@@ -451,6 +451,13 @@ function _M.validate_ishare_jwt(config, token)
    if exp < now or iat > now then
       return nil, "JWT has expired or was issued in the future"
    end
+
+   -- Check aud claim to equal local EORI
+   local local_eori = config["jws"]["identifier"]
+   local aud = payload['aud']
+   if local_eori ~= aud then
+      return nil, "JWT aud claim does not match local EORI"
+   end
    
    -- Verify signature
    local jwt_obj = nil
