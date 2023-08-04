@@ -1,5 +1,4 @@
 -- Imports
---local config = require "api-umbrella.proxy.models.file_config"
 local cjson = require "cjson"
 local jwt = require "resty.jwt"
 local x509 = require("resty.openssl.x509")
@@ -7,13 +6,15 @@ local http = require "resty.http"
 
 -- Returned object
 local _M = {
-   root_ca_set = false
+   root_ca_set = false,
+   is_kong_debug = false
 }
 
-
--- TODO
--- * 
-
+-- Check for debug mode if running within Kong
+local env_kong_log_level = os.getenv("KONG_LOG_LEVEL")
+if (env_kong_log_level) and (env_kong_log_level == "debug") then
+   _M.is_kong_debug = true
+end
 
 -- Set trusted rootCA from file
 local isTrustCASet = false
@@ -266,6 +267,10 @@ function _M.get_delegation_evidence(issuer, target, policies, delegation_url, ac
       headers = headers,
       ssl_verify = ssl,
    }
+   if _M.is_kong_debug then
+      print("Sending delegationRequest to: ", delegation_url)
+      print(options.body)
+   end
    local res, err = request(delegation_url, options)
    if err then
       return nil, "Error when retrieving delegation evidence: "..err
