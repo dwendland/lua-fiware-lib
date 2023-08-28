@@ -113,8 +113,12 @@ local function request(url, options)
    return res, nil
 end
 
--- Check required API Umbrella config parameters
+-- Check required AR config parameters
 function _M.check_config_ar(config)
+
+   if _M.is_kong_debug then
+      print("Checking config for AR...")
+   end
 
    -- Check for required config parameters
    if ( (not config["jws"]) or (not config["jws"]["private_key"]) or (not config["jws"]["x5c"]) ) then
@@ -146,6 +150,10 @@ end
 -- Check required API Umbrella config parameters
 function _M.check_config_satellite(config)
 
+   if _M.is_kong_debug then
+      print("Checking config for satellite...")
+   end
+
    -- Check for required config parameters
    if ( (not config["jws"]) or (not config["jws"]["private_key"]) or (not config["jws"]["x5c"]) ) then
       return "Missing JWS information (PrivateKey+Certificates) in config"
@@ -172,6 +180,10 @@ end
 
 -- Get access token from AR (or other iSHARE participant)
 function _M.get_token(config, token_url, iss, sub, aud)
+   if _M.is_kong_debug then
+      print("Getting access token at: ", token_url)
+   end
+   
    -- Get certificates and key
    local private_key = config["jws"]["private_key"]
    local x5c_certs = get_x5c_table(config["jws"]["x5c"])
@@ -234,6 +246,10 @@ end
 -- Get delegation evidence from iSHARE AR using valid access_token
 -- prev_steps is optional
 function _M.get_delegation_evidence(issuer, target, policies, delegation_url, access_token, prev_steps)
+
+   if _M.is_kong_debug then
+      print("Getting delegationEvidence from AR...")
+   end
 
    -- Build payload body of request
    local payload = {
@@ -326,6 +342,10 @@ end
 
 function _M.get_trusted_list(config)
 
+   if _M.is_kong_debug then
+      print("Getting trusted list from satellite at: ", satellite_trusted_list_url)
+   end
+
    -- Get config parameters
    local local_eori = config["jws"]["identifier"]
    local satellite_eori = config["satellite"]["identifier"]
@@ -378,6 +398,11 @@ function _M.get_trusted_list(config)
 end
 
 local function check_ca_fingerprint(config, ca_fingerprint)
+
+   if _M.is_kong_debug then
+      print("Checking CA fingerprint...")
+   end
+   
    -- Get trusted list from satellite
    local trusted_list, err = _M.get_trusted_list(config)
    if err then
@@ -400,6 +425,10 @@ end
 
 -- Validate, verify and decode iSHARE JWT
 function _M.validate_ishare_jwt(config, token)
+
+   if _M.is_kong_debug then
+      print("Validate iSHARE JWT: ", token)
+   end
 
    -- Empty token?
    if (not token) or (string.len(token) < 1) then
@@ -511,6 +540,10 @@ end
 -- Returns error, if there is no issued policy for any of the required policies
 function _M.compare_policies(user_policies, req_policies, user_policy_target, req_policy_target)
 
+   if _M.is_kong_debug then
+      print("Comparing issued with required policies...")
+   end
+
    -- Check if user IDs are equal
    if user_policy_target ~= req_policy_target then
       return nil, "Target subject IDs do not match: "..user_policy_target.." != "..req_policy_target
@@ -586,6 +619,10 @@ end
 
 -- Check for expiration and "Permit" rule in required user/org policies
 function _M.check_permit_policies(policies, notBefore, notAfter)
+
+   if _M.is_kong_debug then
+      print("Checking for expiration and Permit rule in policies...")
+   end
 
    -- Check expiration of policies
    local now = os.time()
