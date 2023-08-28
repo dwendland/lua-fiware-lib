@@ -44,6 +44,11 @@ end
 -- Creates a table with the x5c array from a PEM cert chain
 local function get_x5c_table(pem_certs)
 
+   if _M.is_kong_debug then
+      print("Preparing x5c chain from certs: ")
+      print(pem_certs)
+   end
+
    local x5c = {}
    local start = 1
    local b = "-----BEGIN CERTIFICATE-----"
@@ -218,6 +223,9 @@ function _M.get_token(config, token_url, iss, sub, aud)
       header = header,
       payload = payload
    }
+   if _M.is_kong_debug then
+      print("Signing iSHARE JWT...")
+   end
    local signed_jwt = jwt:sign(private_key, unsigned_jwt)
 
    -- Send request to token_url
