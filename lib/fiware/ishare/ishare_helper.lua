@@ -89,6 +89,10 @@ end
 -- Send HTTP request
 local function request(url, options)
 
+   if _M.is_kong_debug then
+      print("Sending request to: ", url)
+   end
+
    local httpc = http.new()
    -- httpc:set_timeout(45000)
    local res, err =  httpc:request_uri(url, options)
@@ -342,15 +346,15 @@ end
 
 function _M.get_trusted_list(config)
 
-   if _M.is_kong_debug then
-      print("Getting trusted list from satellite at: ", satellite_trusted_list_url)
-   end
-
    -- Get config parameters
    local local_eori = config["jws"]["identifier"]
    local satellite_eori = config["satellite"]["identifier"]
    local satellite_token_url = config["satellite"]["token_endpoint"]
    local satellite_trusted_list_url = config["satellite"]["trusted_list_endpoint"]
+
+   if _M.is_kong_debug then
+      print("Getting trusted list from satellite at: ", satellite_trusted_list_url)
+   end
 
    -- Get token at Satellite
    local token, err = _M.get_token(config, satellite_token_url, local_eori, local_eori, satellite_eori)
@@ -375,6 +379,9 @@ function _M.get_trusted_list(config)
    end
 
    -- Get trusted_list_token from response
+   if _M.is_kong_debug then
+      print("Received response: ", res.body)
+   end
    local res_body = cjson.decode(res.body)
    local trusted_list_token = res_body["trusted_list_token"]
    
