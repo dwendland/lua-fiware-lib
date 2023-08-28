@@ -12,10 +12,22 @@ local ishare = require "fiware.ishare.ishare_helper"
 local ngsi = require "fiware.ngsi.ngsi_helper"
 
 -- Returned object
-local _M = {}
+local _M = {
+   is_kong_debug = false
+}
+
+-- Check for debug mode if running within Kong
+local env_kong_log_level = os.getenv("KONG_LOG_LEVEL")
+if (env_kong_log_level) and (env_kong_log_level == "debug") then
+   _M.is_kong_debug = true
+end
 
 -- Builds a table/array with the required policies
 local function build_required_policies(dict)
+   if _M.is_kong_debug then
+      print("Evaluating required policies...")
+   end
+   
    local policies = {}
 
    -- Get policy parameters from NGSI request
@@ -133,6 +145,9 @@ function _M.handle_ngsi_request(config, dict)
    if err then
       return err
    end
+   if _M.is_kong_debug then
+      print("... incoming JWT validated!")
+   end
 
    -- Build required policy from incoming request
    local req_policies, err = build_required_policies(dict)
@@ -153,6 +168,9 @@ function _M.handle_ngsi_request(config, dict)
    local del_notAfter = nil
    if decoded_payload["delegationEvidence"] and decoded_payload["delegationEvidence"] ~= cjson.null and decoded_payload["delegationEvidence"]["policySets"] then
       -- Policy already provided in JWT
+      if _M.is_kong_debug then
+	 print("Getting user delegationEvidence from provided JWT...")
+      end
       if decoded_payload["delegationEvidence"]["policySets"][1] and decoded_payload["delegationEvidence"]["policySets"][1]["policies"] then
 	       user_policies = decoded_payload["delegationEvidence"]["policySets"][1]["policies"]
 	       user_policy_issuer = decoded_payload["delegationEvidence"]["policyIssuer"]
@@ -169,6 +187,9 @@ function _M.handle_ngsi_request(config, dict)
       end
    elseif decoded_payload["authorisationRegistry"] and decoded_payload["authorisationRegistry"] ~= cjson.null then
       -- AR info provided in JWT, get user policy from AR
+      if _M.is_kong_debug then
+	 print("Getting user delegationEvidence from external AR...")
+      end
       local token_url = decoded_payload["authorisationRegistry"]["token_endpoint"]
       local delegation_url = decoded_payload["authorisationRegistry"]["delegation_endpoint"]
       local ar_eori = decoded_payload["authorisationRegistry"]["identifier"]
@@ -196,6 +217,10 @@ function _M.handle_ngsi_request(config, dict)
       end
    else
       -- Info in JWT missing, assuming M2M
+      if _M.is_kong_debug then
+	 print("Assuming M2M flow...")
+      end
+      
       -- Therefore no user policy and skip to next step for organisational policy
       -- Set issuer to JWT target subject, so that in next step we check the AR
       -- whether there is a policy issued by local EORI to the JWT subject
@@ -209,6 +234,10 @@ function _M.handle_ngsi_request(config, dict)
 
    -- Validate user policy if available
    if user_policies then
+      if _M.is_kong_debug then
+	 print("Validating user policy...")
+      end
+      
       -- Compare user policy with required policy
       local matching_policies, err = ishare.compare_policies(user_policies, req_policies, user_policy_targetsub, decoded_payload["sub"])
       if err then
@@ -230,6 +259,9 @@ function _M.handle_ngsi_request(config, dict)
       -- Check at local AR for policy issued by local EORI
       --   M2M: user_policy_issuer == sub of access token (target subject)
       --   H2M: user_policy_issuer == issuer of user policy
+      if _M.is_kong_debug then
+	 print("Checking for delegationEvidence at local AR...")
+      end
       local local_user_del_evi, err = ishare.get_delegation_evidence_ext(config, local_eori, user_policy_issuer, req_policies, local_token_url, local_ar_eori, local_delegation_url, nil)
       if err then
 	       return "Error when retrieving policies from local AR: "..err
@@ -256,10 +288,13 @@ function _M.handle_ngsi_request(config, dict)
       end
    else
       -- User policy claims to be issued by local authority
-      -- No uirther steps required? Access granted!
+      -- No further steps required? Access granted!
    end
 
    -- Policy validated, access granted
+   if _M.is_kong_debug then
+      print("... access granted!")
+   end
    return
    
 end
