@@ -218,6 +218,11 @@ function _M.get_token(config, token_url, iss, sub, aud)
       iat = now
    }
    
+   print("Token request")
+   print(token_url)
+   print(payload)
+   
+
    -- Sign JWS
    local unsigned_jwt = {
       header = header,
@@ -251,6 +256,7 @@ function _M.get_token(config, token_url, iss, sub, aud)
    if not access_token then
       return nil, "access_token not found in response: "..res_body
    end
+   print(access_token)
    return access_token, nil
    
 end
